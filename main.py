@@ -2,41 +2,10 @@
 import pygame
 from sys import exit
 import vars
-
-def main():
-
-    pygame.init()
-
-    ## Default positioning ##
-    start_pos = (vars.win_w*0.5, vars.win_h*0.5)
-    end_pos = None
-    win_size = (vars.win_w, vars.win_h)
-    window = pygame.display.set_mode(win_size)
-    pygame.display.set_caption('IK Visualizer')
-
-    clock = pygame.time.Clock()
-
-    game_running = True
-    while game_running:
-        for event in pygame.event.get():
-            # Handle quit #
-            if event.type == pygame.QUIT:
-                game_running = False
-                print("Quitting...")
-                pygame.quit()
-                exit()
-        
-        mouse_pos = pygame.mouse.get_pos()
-
-        window.fill((0, 0, 0))
-        
-        # Update display #
-        pygame.display.update()
-        clock.tick(vars.FPS)
+import classes
 
 class Main:
     def __init__(self, win_w, win_h, fps):
-        # Initialize window and clock
         pygame.init()
         self.window = pygame.display.set_mode((win_w, win_h))
         pygame.display.set_caption('Procedural Animation Visualizer')
@@ -49,34 +18,58 @@ class Main:
     def setup(self):
         self.events = []
 
-        self.updateVariables()
-        pass
-
-    def updateVariables(self):
-        self.mouse_pos = pygame.mouse.get_pos()
-
-        self.updateDisplay()
-        pass
-
-    def updateDisplay(self):
-        pygame.display.update()
+        # Create objects
+        self.limb1 = classes.SegmentConstraint((0, 0), (0, 0), 50, 50)
+        self.limb2 = classes.SegmentConstraint((0, 0), (0, 0), 50, 30)
+        self.limb3 = classes.SegmentConstraint((0, 0), (0, 0), 50, 50)
 
         self.run()
         pass
 
-    def run(self):
+    def getInputs(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.handleQuit()
 
-        self.clock.tick(self.fps)
-        print(self.mouse_pos)
-
-        self.updateVariables()
+        self.mouse_pos = pygame.mouse.get_pos()
         pass
 
+    def updateVariables(self):
+        self.limb1.anchor_pos = self.mouse_pos
+        self.limb2.anchor_pos = self.limb1.head_pos
+        self.limb3.anchor_pos = self.limb2.head_pos
+
+        #self.limb1.head_pos = self.mouse_pos
+
+        self.limb1.update()
+        self.limb2.update()
+        self.limb3.update()
+        pass
+
+    def updateDisplay(self):
+        self.window.fill((0, 0, 0))
+
+        # Draw objects
+        self.limb1.draw(self.window)
+        self.limb2.draw(self.window)
+        self.limb3.draw(self.window)
+
+        pygame.display.update()
+        pass
+
+    def run(self):
+        while self.GAME_RUNNING:
+            self.getInputs()
+            self.updateVariables()
+            self.updateDisplay()
+
+            self.clock.tick(self.fps)
+            print(self.mouse_pos)
+
+        self.handleQuit()
+
     def handleQuit(self):
-        print('Quitting')
+        print('Quitting...')
         self.GAME_RUNNING = False
         pygame.quit()
         exit()
