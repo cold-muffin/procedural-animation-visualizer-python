@@ -17,11 +17,12 @@ class Main:
 
     def setup(self):
         self.events = []
+        self.limbs = []
 
         # Create objects
-        self.limb1 = classes.SegmentConstraint((0, 0), (0, 0), 50, 50)
-        self.limb2 = classes.SegmentConstraint((0, 0), (0, 0), 50, 30)
-        self.limb3 = classes.SegmentConstraint((0, 0), (0, 0), 50, 50)
+        for i in range(20):
+            self.limb = classes.SegmentConstraint((0, 0), (0, 0), 25, 25)
+            self.limbs.append(self.limb)
 
         self.run()
         pass
@@ -35,24 +36,21 @@ class Main:
         pass
 
     def updateVariables(self):
-        self.limb1.anchor_pos = self.mouse_pos
-        self.limb2.anchor_pos = self.limb1.head_pos
-        self.limb3.anchor_pos = self.limb2.head_pos
-
-        #self.limb1.head_pos = self.mouse_pos
-
-        self.limb1.update()
-        self.limb2.update()
-        self.limb3.update()
+        self.limbs[0].anchor_pos = self.mouse_pos
+        self.limbs[0].updateForwards()
+        for i in range(1, len(self.limbs)):
+            self.limbs[i].anchor_pos = self.limbs[i - 1].head_pos
+            self.limbs[i].updateForwards()
         pass
 
     def updateDisplay(self):
         self.window.fill((0, 0, 0))
 
         # Draw objects
-        self.limb1.draw(self.window)
-        self.limb2.draw(self.window)
-        self.limb3.draw(self.window)
+        for i in range(len(self.limbs)):
+            self.limbs[i].draw(self.window)
+            pygame.draw.circle(self.window, (255, 0, 0), self.limbs[i].anchor_pos, 4)
+            pygame.draw.circle(self.window, (255, 255, 0), self.limbs[i].head_pos, 4)
 
         pygame.display.update()
         pass
@@ -64,7 +62,6 @@ class Main:
             self.updateDisplay()
 
             self.clock.tick(self.fps)
-            print(self.mouse_pos)
 
         self.handleQuit()
 
