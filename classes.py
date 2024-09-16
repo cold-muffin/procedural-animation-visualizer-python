@@ -15,7 +15,7 @@ class SegmentConstraint:
         self.setup()
 
     def setup(self):
-        self.TOLERANCE = 0.05
+        pass
 
     @staticmethod
     def calculateDistance(pos1, pos2):
@@ -33,9 +33,6 @@ class SegmentConstraint:
         if self.line_len == 0:
             e = "Line length equal to 0"
 
-        if abs(self.line_len - self.old_line_len) < self.TOLERANCE:
-            e = "New line length is below tolerance"
-
         if e is not None:
             raise Exception(e)
 
@@ -46,9 +43,8 @@ class SegmentConstraint:
         try:
             self.lineLenGuardClause()
         except Exception as e:
-            #warnings.warn(e)
-            return
-
+            raise Exception(e)
+        
         if self.line_len > self.max_len:
             self.m = self.max_len / self.line_len
 
@@ -61,11 +57,21 @@ class SegmentConstraint:
         self.old_anchor_pos, self.old_head_pos = self.anchor_pos, self.head_pos
 
     def updateForwards(self):
-        self.update()
+        try:
+            self.update()
+        except Exception as e:
+            warnings.warn(e)
+            return
+
         self.head_pos = self.lerpPoint(self.anchor_pos, self.head_pos, self.m)
 
     def updateBackwards(self) -> None:
-        self.update()
+        try:
+            self.update()
+        except Exception as e:
+            warnings.warn(e)
+            return
+        
         self.anchor_pos = self.lerpPoint(self.head_pos, self.anchor_pos, self.m)
 
     def updatePosBackwards(self):

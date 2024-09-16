@@ -20,10 +20,12 @@ class Main:
         self.limbs = []
 
         # Create objects
-        for i in range(20):
+        
+        for i in range(10):
             self.limb = classes.SegmentConstraint((0, 0), (0, 0), 25, 25)
             self.limbs.append(self.limb)
-
+        
+            
         self.run()
         pass
 
@@ -36,22 +38,45 @@ class Main:
         pass
 
     def updateVariables(self):
+        #"""
         self.limbs[0].anchor_pos = self.mouse_pos
         self.limbs[0].updateForwards()
         for i in range(1, len(self.limbs)):
             self.limbs[i].anchor_pos = self.limbs[i - 1].head_pos
             self.limbs[i].updateForwards()
+        #"""
+        """
+        self.limbs[0].head_pos = self.mouse_pos
+        self.limbs[0].anchor_pos = self.limbs[1].head_pos
+        self.limbs[0].updateBackwards()
+
+        for i in range(1, len(self.limbs) - 1):
+            self.limbs[i].anchor_pos = self.limbs[i + 1].head_pos
+            self.limbs[i].head_pos = self.limbs[i - 1].anchor_pos
+            self.limbs[i].updateBackwards()
+        
+        self.limbs[len(self.limbs) - 1].anchor_pos = (400, 300)
+        self.limbs[len(self.limbs) - 1].head_pos = self.limbs[len(self.limbs) - 2].anchor_pos
+        self.limbs[len(self.limbs) - 1].updateForwards()
+
+        for i in range(len(self.limbs) - 1):
+            print(i, len(self.limbs) - 2 - i)
+            self.limbs[len(self.limbs) - 2 - i].anchor_pos = self.limbs[len(self.limbs) - 1 - i].head_pos
+            self.limbs[len(self.limbs) - 2 - i].updateForwards()
+        """
         pass
 
     def updateDisplay(self):
         self.window.fill((0, 0, 0))
 
         # Draw objects
+        
         for i in range(len(self.limbs)):
             self.limbs[i].draw(self.window)
             pygame.draw.circle(self.window, (255, 0, 0), self.limbs[i].anchor_pos, 4)
             pygame.draw.circle(self.window, (255, 255, 0), self.limbs[i].head_pos, 4)
-
+        
+        
         pygame.display.update()
         pass
 
