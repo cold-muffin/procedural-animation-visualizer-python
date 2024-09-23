@@ -17,15 +17,13 @@ class Main:
 
     def setup(self):
         self.events = []
-        self.limbs = []
+        #self.limbs = []
 
         # Create objects
-        
-        for i in range(10):
-            self.limb = classes.SegmentConstraint((0, 0), (0, 0), 25, 25)
-            self.limbs.append(self.limb)
-        
-            
+        self.chain = classes.FABRIKChain(20, (200, 300), (0, 0), 10, 10)
+        self.schain = classes.DCChain(6, (0, 0), (0, 0), 20, 20)
+        self.fabrikchain2 = classes.FABRIKChain(5, (400, 200), (0, 0), 20, 20)
+
         self.run()
         pass
 
@@ -38,44 +36,24 @@ class Main:
         pass
 
     def updateVariables(self):
-        #"""
-        self.limbs[0].anchor_pos = self.mouse_pos
-        self.limbs[0].updateForwards()
-        for i in range(1, len(self.limbs)):
-            self.limbs[i].anchor_pos = self.limbs[i - 1].head_pos
-            self.limbs[i].updateForwards()
-        #"""
-        """
-        self.limbs[0].head_pos = self.mouse_pos
-        self.limbs[0].anchor_pos = self.limbs[1].head_pos
-        self.limbs[0].updateBackwards()
+        self.chain.updateHead(self.mouse_pos)
+        self.chain.update()
 
-        for i in range(1, len(self.limbs) - 1):
-            self.limbs[i].anchor_pos = self.limbs[i + 1].head_pos
-            self.limbs[i].head_pos = self.limbs[i - 1].anchor_pos
-            self.limbs[i].updateBackwards()
-        
-        self.limbs[len(self.limbs) - 1].anchor_pos = (400, 300)
-        self.limbs[len(self.limbs) - 1].head_pos = self.limbs[len(self.limbs) - 2].anchor_pos
-        self.limbs[len(self.limbs) - 1].updateForwards()
+        self.schain.updateHead(self.mouse_pos)
+        self.schain.update()
 
-        for i in range(len(self.limbs) - 1):
-            print(i, len(self.limbs) - 2 - i)
-            self.limbs[len(self.limbs) - 2 - i].anchor_pos = self.limbs[len(self.limbs) - 1 - i].head_pos
-            self.limbs[len(self.limbs) - 2 - i].updateForwards()
-        """
+        self.fabrikchain2.updateHead(self.mouse_pos)
+        self.fabrikchain2.update()
+
         pass
 
     def updateDisplay(self):
         self.window.fill((0, 0, 0))
 
         # Draw objects
-        
-        for i in range(len(self.limbs)):
-            self.limbs[i].draw(self.window)
-            pygame.draw.circle(self.window, (255, 0, 0), self.limbs[i].anchor_pos, 4)
-            pygame.draw.circle(self.window, (255, 255, 0), self.limbs[i].head_pos, 4)
-        
+        self.chain.draw(self.window)
+        #self.schain.draw(self.window)
+        #self.fabrikchain2.draw(self.window)
         
         pygame.display.update()
         pass
